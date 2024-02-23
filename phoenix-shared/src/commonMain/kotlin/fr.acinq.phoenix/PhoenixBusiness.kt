@@ -83,7 +83,7 @@ class PhoenixBusiness(
 
     val appDb by lazy { SqliteAppDb(createAppDbDriver(ctx)) }
     val networkMonitor by lazy { NetworkMonitor(loggerFactory, ctx) }
-    val walletManager by lazy { WalletManager(chain) }
+    val walletManager by lazy { WalletManager(loggerFactory, chain) }
     val nodeParamsManager by lazy { NodeParamsManager(this) }
     val databaseManager by lazy { DatabaseManager(this) }
     val peerManager by lazy { PeerManager(this) }

@@ -20,11 +20,13 @@ import fr.acinq.bitcoin.*
 import fr.acinq.lightning.crypto.KeyManager
 import fr.acinq.lightning.crypto.LocalKeyManager
 import fr.acinq.lightning.crypto.div
+import fr.acinq.lightning.logging.LoggerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.*
 
 class WalletManager(
+    private val loggerFactory: LoggerFactory,
     private val chain: Chain
 ) : CoroutineScope by MainScope() {
 
@@ -45,6 +47,7 @@ class WalletManager(
     /** Loads a seed and creates the key manager. Returns an objet containing some keys for the iOS app. */
     fun loadWallet(seed: ByteArray): WalletInfo {
         val km = keyManager.value ?: LocalKeyManager(
+            loggerFactory,
             seed = seed.byteVector(),
             chain = chain,
             remoteSwapInExtendedPublicKey = NodeParamsManager.remoteSwapInXpub,

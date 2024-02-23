@@ -92,7 +92,12 @@ class StartupViewModel : ViewModel() {
         }
     }
 
-    fun checkSeedFallback(context: Context, words: List<String>, onSuccess: suspend (ByteArray) -> Unit) {
+    fun checkSeedFallback(
+        context: Context,
+        words: List<String>,
+        onSuccess: suspend (ByteArray) -> Unit,
+        loggerFactory: fr.acinq.lightning.logging.LoggerFactory
+    ) {
         if (decryptionState.value is StartupDecryptionState.SeedInputFallback.CheckingSeed) return
         decryptionState.value = StartupDecryptionState.SeedInputFallback.CheckingSeed
 
@@ -101,7 +106,7 @@ class StartupViewModel : ViewModel() {
             decryptionState.value = StartupDecryptionState.SeedInputFallback.Error.Other(e)
         }) {
             val seed = MnemonicCode.toSeed(mnemonics = words.joinToString(" "), passphrase = "").byteVector()
-            val localKeyManager = LocalKeyManager(seed = seed, chain = NodeParamsManager.chain, remoteSwapInExtendedPublicKey = NodeParamsManager.remoteSwapInXpub)
+            val localKeyManager = LocalKeyManager(loggerFactory = loggerFactory, seed = seed, chain = NodeParamsManager.chain, remoteSwapInExtendedPublicKey = NodeParamsManager.remoteSwapInXpub)
             val nodeIdHash = localKeyManager.nodeIdHash()
             val channelsDbFile = context.getDatabasePath("channels-${NodeParamsManager.chain.name.lowercase()}-$nodeIdHash.sqlite")
             if (channelsDbFile.exists()) {

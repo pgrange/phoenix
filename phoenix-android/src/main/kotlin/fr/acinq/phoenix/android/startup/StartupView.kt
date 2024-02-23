@@ -58,10 +58,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.acinq.bitcoin.MnemonicCode
+import fr.acinq.lightning.logging.LoggerFactory
 import fr.acinq.phoenix.android.AppViewModel
 import fr.acinq.phoenix.android.BuildConfig
 import fr.acinq.phoenix.android.R
 import fr.acinq.phoenix.android.application
+import fr.acinq.phoenix.android.business
 import fr.acinq.phoenix.android.components.BorderButton
 import fr.acinq.phoenix.android.components.Button
 import fr.acinq.phoenix.android.components.Card
@@ -139,7 +141,11 @@ fun StartupView(
         } else {
             when (val currentState = serviceState) {
                 null, is NodeServiceState.Disconnected -> Text(stringResource(id = R.string.startup_binding_service))
-                is NodeServiceState.Off -> DecryptSeedAndStartBusiness(appVM = appVM, onKeyAbsent = onKeyAbsent)
+                is NodeServiceState.Off -> DecryptSeedAndStartBusiness(
+                    appVM = appVM,
+                    onKeyAbsent = onKeyAbsent,
+                    loggerFactory = business.loggerFactory
+                )
                 is NodeServiceState.Init -> Text(stringResource(id = R.string.startup_starting))
                 is NodeServiceState.Error -> {
                     ErrorMessage(
@@ -170,6 +176,7 @@ fun StartupView(
 private fun DecryptSeedAndStartBusiness(
     appVM: AppViewModel,
     onKeyAbsent: () -> Unit,
+    loggerFactory: LoggerFactory
 ) {
     val context = LocalContext.current
     val log = logger("StartupView")
@@ -228,9 +235,13 @@ private fun DecryptSeedAndStartBusiness(
                 }
                 is StartupDecryptionState.SeedInputFallback -> {
                     StartupSeedFallback(state = state, checkSeedFallback = { ctx, words ->
-                        vm.checkSeedFallback(ctx, words, onSuccess = { seed ->
-                            appVM.service!!.startBusiness(seed, requestCheckLegacyChannels = legacyAppStatus is LegacyAppStatus.Unknown)
-                        })
+                        vm.checkSeedFallback(
+                            ctx, words,
+                            onSuccess = { seed ->
+                                appVM.service!!.startBusiness(seed, requestCheckLegacyChannels = legacyAppStatus is LegacyAppStatus.Unknown)
+                            },
+                            loggerFactory
+                        )
                     })
                 }
             }

@@ -25,6 +25,7 @@ class LnurlAuthTest {
         val seed = `MnemonicCode$`.`MODULE$`.toSeed("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "")
         val legacyKeyManager = fr.acinq.eclair.crypto.LocalKeyManager(seed, Block.TestnetGenesisBlock().hash())
         val kmpKeyManager = LocalKeyManager(
+            loggerFactory = testLoggerFactory,
             seed = seed.toArray().byteVector64(),
             chain = Chain.Testnet,
             remoteSwapInExtendedPublicKey = "tpubDDt5vQap1awkyDXx1z1cP7QFKSZHDCCpbU8nSq9jy7X2grTjUVZDePexf6gc6AHtRRzkgfPW87K6EKUVV6t3Hu2hg7YkHkmMeLSfrP85x41"
@@ -64,6 +65,7 @@ class LnurlAuthTest {
         val seed = `MnemonicCode$`.`MODULE$`.toSeed("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", "")
         val legacyKeyManager = fr.acinq.eclair.crypto.LocalKeyManager(seed, Block.LivenetGenesisBlock().hash())
         val kmpKeyManager = LocalKeyManager(
+            loggerFactory = testLoggerFactory,
             seed = seed.toArray().byteVector64(),
             chain = Chain.Testnet,
             remoteSwapInExtendedPublicKey = "tpubDDt5vQap1awkyDXx1z1cP7QFKSZHDCCpbU8nSq9jy7X2grTjUVZDePexf6gc6AHtRRzkgfPW87K6EKUVV6t3Hu2hg7YkHkmMeLSfrP85x41"
